@@ -94,5 +94,12 @@ Rails.application.routes.draw do
   get "webmanifest"    => "pwa#manifest"
   get "service-worker" => "pwa#service_worker"
 
+  namespace :api do
+    resources :rooms, only: :index do
+      resources :messages, only: %i[ index create ]
+    end
+    resources :users, only: :index
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

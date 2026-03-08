@@ -14,6 +14,44 @@
     <% end %>
   </div>
 
+  <fieldset class="gap max-width pad border border-radius">
+    <legend class="min-width txt-align-start pad-inline">
+      <strong>API Token</strong>
+    </legend>
+
+    <% bearer_token = bot.bot_key %>
+    <div class="flex align-center gap">
+      <div class="flex-item-grow">
+        <input type="text" class="input full-width fill-white" value="<%= bearer_token %>" aria-label="Bearer token" readonly>
+      </div>
+      <div class="txt-small">
+        <%= button_to_copy_to_clipboard(bearer_token) do %>
+          <%= image_tag "copy-paste.svg", aria: { hidden: "true" }, size: 20 %>
+          <span class="for-screen-reader">Copy bearer token</span>
+        <% end %>
+      </div>
+    </div>
+
+    <p class="txt-small margin-none">Use as: <code>Authorization: Bearer <%= bearer_token %></code></p>
+  </fieldset>
+
+  <% permissions = bot.bot_room_permissions.includes(:room) %>
+  <% if permissions.any? %>
+    <fieldset class="gap max-width pad border border-radius">
+      <legend class="min-width txt-align-start pad-inline">
+        <strong>Room permissions</strong>
+      </legend>
+
+      <% permissions.each do |perm| %>
+        <div class="flex align-center gap txt-small">
+          <strong class="overflow-ellipsis"><%= room_display_name(perm.room) %></strong>
+          <span><%= "Read" if perm.can_read %></span>
+          <span><%= "Write" if perm.can_write %></span>
+        </div>
+      <% end %>
+    </fieldset>
+  <% end %>
+
   <% bot.rooms.without_directs.ordered.each do |room| %>
     <fieldset class="gap max-width pad border border-radius">
       <legend class="min-width txt-align-start pad-inline">

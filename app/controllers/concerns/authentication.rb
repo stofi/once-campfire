@@ -41,9 +41,22 @@ module Authentication
     end
 
     def bot_authentication
-      if params[:bot_key].present? && bot = User.authenticate_bot(params[:bot_key].strip)
+      bot = authenticate_bot_by_param || authenticate_bot_by_bearer_token
+      if bot
         Current.user = bot
         set_authenticated_by(:bot_key)
+      end
+    end
+
+    def authenticate_bot_by_param
+      if params[:bot_key].present?
+        User.authenticate_bot(params[:bot_key].strip)
+      end
+    end
+
+    def authenticate_bot_by_bearer_token
+      if token = request.headers["Authorization"]&.match(/\ABearer (.+)\z/)&.captures&.first
+        User.authenticate_bot(token.strip)
       end
     end
 

@@ -77,6 +77,7 @@ class MessagesController < ApplicationController
     end
 
     def bots_eligible_for_webhook
-      @room.direct? ? @room.users.active_bots : @message.mentionees.active_bots
+      candidates = @room.direct? ? @room.users.active_bots : @message.mentionees.active_bots
+      candidates.where(id: BotRoomPermission.where(room: @room, can_read: true).select(:user_id))
     end
 end

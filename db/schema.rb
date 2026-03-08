@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_08_000001) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -67,6 +67,18 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
     t.integer "user_id", null: false
     t.index ["ip_address"], name: "index_bans_on_ip_address"
     t.index ["user_id"], name: "index_bans_on_user_id"
+  end
+
+  create_table "bot_room_permissions", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "room_id", null: false
+    t.boolean "can_read", default: false, null: false
+    t.boolean "can_write", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "room_id"], name: "index_bot_room_permissions_on_user_id_and_room_id", unique: true
+    t.index ["user_id"], name: "index_bot_room_permissions_on_user_id"
+    t.index ["room_id"], name: "index_bot_room_permissions_on_room_id"
   end
 
   create_table "boosts", force: :cascade do |t|
@@ -169,6 +181,8 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_12_154340) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "bans", "users"
+  add_foreign_key "bot_room_permissions", "rooms"
+  add_foreign_key "bot_room_permissions", "users"
   add_foreign_key "boosts", "messages"
   add_foreign_key "messages", "rooms"
   add_foreign_key "messages", "users", column: "creator_id"

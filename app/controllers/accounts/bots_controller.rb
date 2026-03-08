@@ -8,18 +8,22 @@ class Accounts::BotsController < ApplicationController
 
   def new
     @bot = User.active_bots.new
+    @rooms = Room.without_directs.ordered
   end
 
   def create
-    User.create_bot! bot_params
+    bot = User.create_bot! bot_params
+    update_room_permissions(bot)
     redirect_to account_bots_url
   end
 
   def edit
+    @rooms = Room.without_directs.ordered
   end
 
   def update
     @bot.update_bot! bot_params
+    update_room_permissions(@bot)
     redirect_to account_bots_url
   end
 
@@ -35,5 +39,20 @@ class Accounts::BotsController < ApplicationController
 
     def bot_params
       params.require(:user).permit(:name, :avatar, :webhook_url)
+    end
+
+    def update_room_permissions(bot)
+      permissions = params[:room_permissions] || {}
+
+      bot.bot_room_permissions.delete_all
+
+      permissions.each do |room_id, perms|
+        next unless perms[:can_read] == "1" || perms[:can_write] == "1"
+        bot.bot_room_permissions.create!(
+          room_id: room_id,
+          can_read: perms[:can_read] == "1",
+          can_write: perms[:can_write] == "1"
+        )
+      end
     end
 end
