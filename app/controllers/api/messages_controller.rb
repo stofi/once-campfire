@@ -4,7 +4,7 @@ class Api::MessagesController < Api::BaseController
   def index
     require_room_permission!(:can_read) || return
 
-    messages = @room.messages.with_creator.ordered
+    messages = @room.messages.with_creator.with_boosts.ordered
 
     if params[:since].present?
       since = Time.iso8601(params[:since])
@@ -22,6 +22,9 @@ class Api::MessagesController < Api::BaseController
           id: msg.creator.id,
           name: msg.creator.name,
           bot: msg.creator.bot?
+        },
+        boosts: msg.boosts.ordered.map { |b|
+          { content: b.content, user: { id: b.booster.id, name: b.booster.name } }
         },
         created_at: msg.created_at.iso8601,
         updated_at: msg.updated_at.iso8601
