@@ -31,11 +31,20 @@ class Webhook < ApplicationRecord
     end
 
     def payload(message)
+      room = message.room
       {
         user:    { id: message.creator.id, name: message.creator.name },
-        room:    { id: message.room.id, name: message.room.name, path: room_bot_messages_path(message) },
+        room:    { id: room.id, name: room_name(room), type: room.type.demodulize.downcase, path: room_bot_messages_path(message) },
         message: { id: message.id, body: { html: message.body.body, plain: without_recipient_mentions(message.plain_text_body) }, path: message_path(message) }
       }.to_json
+    end
+
+    def room_name(room)
+      if room.direct?
+        room.users.where.not(id: user.id).pluck(:name).to_sentence.presence || user.name
+      else
+        room.name
+      end
     end
 
     def message_path(message)
@@ -44,25 +53,6 @@ class Webhook < ApplicationRecord
 
     def room_bot_messages_path(message)
       Rails.application.routes.url_helpers.room_bot_messages_path(message.room, user.bot_key)
-    end
-
-    def extract_text_from(response)
-      String.new(response.body).force_encoding("UTF-8") if response.code == "200" && response.content_type.in?(%w[ text/html text/plain ])
-    end
-
-    def receive_text_reply_to(room, text:)
-      room.messages.create!(body: text, creator: user).broadcast_create
-    end
-
-    def extract_attachment_from(response)
-      if response.content_type && mime_type = Mime::Type.lookup(response.content_type)
-        ActiveStorage::Blob.create_and_upload! \
-          io: StringIO.new(response.body), filename: "attachment.#{mime_type.symbol}", content_type: mime_type.to_s
-      end
-    end
-
-    def receive_attachment_reply_to(room, attachment:)
-      room.messages.create_with_attachment!(attachment: attachment, creator: user).broadcast_create
     end
 
     def without_recipient_mentions(body)

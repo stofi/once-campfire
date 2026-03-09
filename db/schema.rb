@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_03_08_000001) do
+ActiveRecord::Schema[8.2].define(version: 2026_03_09_000001) do
   create_table "accounts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "custom_styles"
@@ -74,6 +74,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_03_08_000001) do
     t.integer "room_id", null: false
     t.boolean "can_read", default: false, null: false
     t.boolean "can_write", default: false, null: false
+    t.boolean "webhook_all_messages", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id", "room_id"], name: "index_bot_room_permissions_on_user_id_and_room_id", unique: true

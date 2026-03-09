@@ -47,6 +47,7 @@
           <strong class="overflow-ellipsis"><%= room_display_name(perm.room) %></strong>
           <span><%= "Read" if perm.can_read %></span>
           <span><%= "Write" if perm.can_write %></span>
+          <span><%= "All messages" if perm.webhook_all_messages %></span>
         </div>
       <% end %>
     </fieldset>

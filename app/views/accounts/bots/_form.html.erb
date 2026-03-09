@@ -50,6 +50,12 @@
           <input type="checkbox" name="room_permissions[<%= room.id %>][can_write]" value="1" <%= "checked" if permission&.can_write %> hidden data-action="change->perm-toggle#toggle" data-perm-toggle-target="checkbox">
           Write
         </label>
+
+        <input type="hidden" name="room_permissions[<%= room.id %>][webhook_all_messages]" value="0">
+        <label class="btn txt-small <%= "btn--reversed" if permission&.webhook_all_messages %>" style="cursor: pointer;" data-controller="perm-toggle" title="Send webhook for all messages, not just @mentions">
+          <input type="checkbox" name="room_permissions[<%= room.id %>][webhook_all_messages]" value="1" <%= "checked" if permission&.webhook_all_messages %> hidden data-action="change->perm-toggle#toggle" data-perm-toggle-target="checkbox">
+          All messages
+        </label>
       </div>
     <% end %>
   </div>

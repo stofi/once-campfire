@@ -3,9 +3,11 @@ bender_watercooler_read_write:
   room: watercooler
   can_read: true
   can_write: true
+  webhook_all_messages: true
 
 bender_hq_read_only:
   user: bender
   room: hq
   can_read: true
   can_write: false
+  webhook_all_messages: false

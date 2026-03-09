@@ -51,7 +51,8 @@ class Accounts::BotsController < ApplicationController
         bot.bot_room_permissions.create!(
           room_id: room_id,
           can_read: perms[:can_read] == "1",
-          can_write: perms[:can_write] == "1"
+          can_write: perms[:can_write] == "1",
+          webhook_all_messages: perms[:webhook_all_messages] == "1"
         )
       end
     end

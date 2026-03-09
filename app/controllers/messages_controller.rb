@@ -80,7 +80,11 @@ class MessagesController < ApplicationController
       if @room.direct?
         @room.users.active_bots
       else
-        User.active_bots.where(id: BotRoomPermission.where(room: @room, can_read: true).select(:user_id))
+        all_msg_ids = BotRoomPermission.where(room: @room, can_read: true, webhook_all_messages: true).pluck(:user_id)
+        mentioned_ids = @message.mentionees.active_bots
+          .where(id: BotRoomPermission.where(room: @room, can_read: true).select(:user_id)).ids
+
+        User.active_bots.where(id: all_msg_ids | mentioned_ids)
       end
     end
 end
