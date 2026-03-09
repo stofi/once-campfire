@@ -10,7 +10,6 @@ class Api::RoomsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     rooms = JSON.parse(response.body)
-    assert_equal 2, rooms.size
     room_names = rooms.map { |r| r["name"] }
     assert_includes room_names, "All Talk"
     assert_includes room_names, "HQ"
@@ -27,6 +26,16 @@ class Api::RoomsControllerTest < ActionDispatch::IntegrationTest
     hq = rooms.find { |r| r["name"] == "HQ" }
     assert hq["can_read"]
     refute hq["can_write"]
+  end
+
+  test "list rooms includes direct rooms with full access" do
+    get api_rooms_url, headers: bearer_headers(@bot)
+    rooms = JSON.parse(response.body)
+
+    direct = rooms.find { |r| r["type"] == "direct" }
+    assert direct
+    assert direct["can_read"]
+    assert direct["can_write"]
   end
 
   test "unauthorized without token" do

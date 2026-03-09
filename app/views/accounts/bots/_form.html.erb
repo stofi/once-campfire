@@ -32,25 +32,25 @@
 <% if @rooms.present? %>
   <div class="flex flex-column gap">
     <h2 class="txt-large margin-none">Room permissions</h2>
-    <p class="margin-none txt-small">Select which rooms this bot can read from and write to via the API.</p>
+    <p class="margin-none txt-small">Select which rooms this bot can read from and write to via the API and webhooks.</p>
 
     <% @rooms.each do |room| %>
       <% permission = bot.persisted? ? bot.bot_room_permissions.find_by(room_id: room.id) : nil %>
-      <fieldset class="flex align-center gap pad-block-half pad-inline border border-radius">
-        <legend class="pad-inline txt-small"><strong><%= room_display_name(room) %></strong></legend>
+      <div class="flex align-center gap pad-block-half pad-inline border border-radius">
+        <strong class="overflow-ellipsis flex-item-grow"><%= room_display_name(room) %></strong>
 
-        <label class="flex align-center gap txt-small">
-          <input type="hidden" name="room_permissions[<%= room.id %>][can_read]" value="0">
-          <input type="checkbox" name="room_permissions[<%= room.id %>][can_read]" value="1" <%= "checked" if permission&.can_read %>>
+        <input type="hidden" name="room_permissions[<%= room.id %>][can_read]" value="0">
+        <label class="btn txt-small <%= "btn--reversed" if permission&.can_read %>" style="cursor: pointer;" data-controller="perm-toggle">
+          <input type="checkbox" name="room_permissions[<%= room.id %>][can_read]" value="1" <%= "checked" if permission&.can_read %> hidden data-action="change->perm-toggle#toggle" data-perm-toggle-target="checkbox">
           Read
         </label>
 
-        <label class="flex align-center gap txt-small">
-          <input type="hidden" name="room_permissions[<%= room.id %>][can_write]" value="0">
-          <input type="checkbox" name="room_permissions[<%= room.id %>][can_write]" value="1" <%= "checked" if permission&.can_write %>>
+        <input type="hidden" name="room_permissions[<%= room.id %>][can_write]" value="0">
+        <label class="btn txt-small <%= "btn--reversed" if permission&.can_write %>" style="cursor: pointer;" data-controller="perm-toggle">
+          <input type="checkbox" name="room_permissions[<%= room.id %>][can_write]" value="1" <%= "checked" if permission&.can_write %> hidden data-action="change->perm-toggle#toggle" data-perm-toggle-target="checkbox">
           Write
         </label>
-      </fieldset>
+      </div>
     <% end %>
   </div>
 <% end %>

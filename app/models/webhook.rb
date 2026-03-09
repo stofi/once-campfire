@@ -7,15 +7,9 @@ class Webhook < ApplicationRecord
   belongs_to :user
 
   def deliver(message)
-    post(payload(message)).tap do |response|
-      if text = extract_text_from(response)
-        receive_text_reply_to(message.room, text: text)
-      elsif attachment = extract_attachment_from(response)
-        receive_attachment_reply_to(message.room, attachment: attachment)
-      end
-    end
+    post(payload(message))
   rescue Net::OpenTimeout, Net::ReadTimeout
-    receive_text_reply_to message.room, text: "Failed to respond within #{ENDPOINT_TIMEOUT} seconds"
+    # Silently ignore timeouts — bot can use the API to respond
   end
 
   private

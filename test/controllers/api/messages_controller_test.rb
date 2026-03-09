@@ -53,6 +53,21 @@ class Api::MessagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :unauthorized
   end
 
+  test "read messages from direct room without explicit permission" do
+    dm = rooms(:bender_and_kevin)
+    get api_room_messages_url(dm), headers: bearer_headers(@bot)
+    assert_response :success
+  end
+
+  test "post message to direct room without explicit permission" do
+    dm = rooms(:bender_and_kevin)
+    assert_difference -> { Message.count }, +1 do
+      post api_room_messages_url(dm), headers: bearer_headers(@bot),
+        params: { body: "DM from bot" }, as: :json
+    end
+    assert_response :created
+  end
+
   private
     def bearer_headers(bot)
       { "Authorization" => "Bearer #{bot.bot_key}" }

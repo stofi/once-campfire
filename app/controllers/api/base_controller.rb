@@ -20,6 +20,10 @@ class Api::BaseController < ActionController::Base
     end
 
     def require_room_permission!(permission)
+      if @room.direct? && @room.users.include?(Current.user)
+        return true
+      end
+
       perm = Current.user.bot_room_permissions.find_by(room_id: @room.id)
 
       unless perm&.public_send(permission)
