@@ -35,7 +35,7 @@ class Webhook < ApplicationRecord
       {
         user:    { id: message.creator.id, name: message.creator.name },
         room:    { id: room.id, name: room_name(room), type: room.type.demodulize.downcase, path: room_bot_messages_path(message) },
-        message: { id: message.id, body: { html: message.body.body, plain: without_recipient_mentions(message.plain_text_body) }, path: message_path(message) },
+        message: { id: message.id, body: { html: message.body.body, plain: without_recipient_mentions(message.plain_text_body) }, path: message_path(message), has_attachment: message.attachment? },
         mentions: message.mentionees.map { |u| { id: u.id, name: u.name, bot: u.bot? } }
       }.to_json
     end
